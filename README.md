@@ -99,20 +99,20 @@ the structure of the response is the homepage categories and data going down.
 
 it defaults to the user's timezone.
 
-you can log in by specifying a `sp_dc` cookie in the `logIn` function. the cookie should be everything after the `sp_dc=` and everything before the semicolon (`;`).
+you can log in by specifying a `sp_dc` cookie in the `login` function. the cookie should be everything after the `sp_dc=` and everything before the semicolon (`;`).
 
 ```js
-spotify.logIn(`XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX`);
+await spotify.login(`XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX`);
 ```
 
-please put this in a secure place, as it grants full access to your spotify account.
-
-you can then learn who you are using `spotify.whoAmI()`:
+please put the cookie in a secure place, as it grants full access to your spotify account. the `login` function returns the result of the below `whoAmI` function:
 
 ```js
 const iAm = await spotify.whoAmI();
 console.log('i am', iAm.name);
 ```
+
+this tells you who the name of the account as well as some basic information (avatar, etc).
 
 you can use the synchronous `isLoggedIn` to find out if you're logged in:
 

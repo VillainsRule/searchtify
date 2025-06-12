@@ -6,9 +6,10 @@ class Spotify {
         this.customUserAgent = userAgent;
     }
 
-    logIn(sp_dcCookie) {
+    async login(sp_dcCookie) {
         if (!sp_dcCookie) throw new Error('specify the sp_dc cookie in logIn');
         this.cookie = sp_dcCookie;
+        return await this.whoAmI();
     }
 
     async getVariables() {
@@ -248,7 +249,7 @@ class Spotify {
     }
 
     isLoggedIn() {
-        return this.accessToken.isAnonymous;
+        return this.accessToken?.isAnonymous;
     }
 
     async whoAmI() {
