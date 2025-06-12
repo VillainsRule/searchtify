@@ -99,7 +99,39 @@ the structure of the response is the homepage categories and data going down.
 
 it defaults to the user's timezone.
 
-you can also specify a custom useragent for requests as the first string to the `Spotify` class constructor.
+you can log in by specifying a `sp_dc` cookie in the `logIn` function. the cookie should be everything after the `sp_dc=` and everything before the semicolon (`;`).
+
+```js
+spotify.logIn(`XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX`);
+```
+
+please put this in a secure place, as it grants full access to your spotify account.
+
+you can then learn who you are using `spotify.whoAmI()`:
+
+```js
+const iAm = await spotify.whoAmI();
+console.log('i am', iAm.name);
+```
+
+you can use the synchronous `isLoggedIn` to find out if you're logged in:
+
+```js
+const isLoggedIn = spotify.isLoggedIn();
+if (isLoggedIn) console.log('hi, i am', (await spotify.whoAmI()).name);
+else console.log('i am not logged in :(');
+```
+
+this package may lead to your spotify account being banned. not my fault, use responsibly.
+
+you can also set a custom user agent using `setUserAgent`:
+
+```js
+spotify.setUserAgent('putting something like this in the useragent will probably flag your IP');
+```
+
+> [!NOTE]
+> as of 1.2.0, the accessToken and clientToken will automatically refresh, meaning searchtify can be used in 24/7 programs rather than snippets.
 
 <br><br>
 <h5 align='center'>made with ❤️</h5>

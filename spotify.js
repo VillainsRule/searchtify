@@ -2,12 +2,24 @@ import axios from 'axios';
 import * as OTPAuth from 'otpauth';
 
 class Spotify {
-    constructor(customUserAgent = '') {
-        this.customUserAgent = customUserAgent;
+    setUserAgent(userAgent) {
+        this.customUserAgent = userAgent;
+    }
+
+    logIn(sp_dcCookie) {
+        if (!sp_dcCookie) throw new Error('specify the sp_dc cookie in logIn');
+        this.cookie = sp_dcCookie;
     }
 
     async getVariables() {
-        const mainPage = await axios.get('https://open.spotify.com');
+        const mainPage = await axios.get('https://open.spotify.com', {
+            headers: {
+                accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                cookie: this.cookie,
+                'user-agent': this.customUserAgent || 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36'
+            }
+        });
+
         this.deviceId = mainPage.headers['set-cookie'].find(h => h.startsWith('sp_t=')).split(';')[0].split('=')[1];
 
         const mainScript = mainPage.data.match(/<\/script><script src="(.*?)"/)[1];
@@ -16,7 +28,6 @@ class Spotify {
         this.variables = {
             buildVer: scriptContent.data.match(/buildVer:"(.*?)"/)[1],
             buildDate: scriptContent.data.match(/buildDate:"(.*?)"/)[1],
-            clientID: scriptContent.data.match(/clientID:"(.*?)"/)[1],
             clientVersion: scriptContent.data.match(/clientVersion:"(.*?)"/)[1],
             serverTime: mainPage.headers['x-timer'].match(/S([0-9]+)\./)[1]
         };
@@ -65,7 +76,8 @@ class Spotify {
                 'Accept': '*/*',
                 'Accept-Language': 'en-US,en;q=0.9',
                 'Accept-Encoding': 'gzip, deflate, br',
-                'Connection': 'keep-alive'
+                'Connection': 'keep-alive',
+                'Cookie': this.cookie
             }
         });
 
@@ -86,7 +98,7 @@ class Spotify {
         const response = await axios.post('https://clienttoken.spotify.com/v1/clienttoken', {
             client_data: {
                 client_version: this.variables.clientVersion,
-                client_id: this.variables.clientID,
+                client_id: this.accessToken.clientId,
                 js_sdk_data: {
                     device_brand: 'Apple',
                     device_model: 'unknown',
@@ -99,16 +111,21 @@ class Spotify {
         }, {
             headers: {
                 'Accept': 'application/json',
+                'Cookie': this.cookie,
                 'Content-Type': 'application/json'
             }
         });
 
         this.clientToken = response.data.granted_token;
+        this.clientToken.refreshAt = Date.now() + 1209600;
     }
 
     async getHeaders() {
         if (!this.accessToken) await this.getAccessToken();
         if (!this.clientToken) await this.getClientToken();
+
+        if (this.accessToken.accessTokenExpirationTimestampMs - Date.now() <= 1) await this.getAccessToken();
+        if (this.clientToken.refreshAt <= Date.now()) await this.getClientToken();
 
         return {
             'Accept': 'application/json',
@@ -228,6 +245,36 @@ class Spotify {
         });
 
         return response.data.data.artistUnion;
+    }
+
+    isLoggedIn() {
+        return this.accessToken.isAnonymous;
+    }
+
+    async whoAmI() {
+        try {
+            const response = await axios.post('https://api-partner.spotify.com/pathfinder/v2/query', {
+                operationName: 'profileAttributes',
+                variables: {},
+                extensions: {
+                    persistedQuery: {
+                        version: 1,
+                        sha256Hash: '53bcb064f6cd18c23f752bc324a791194d20df612d8e1239c735144ab0399ced'
+                    }
+                }
+            }, {
+                headers: {
+                    ...(await this.getHeaders()),
+                    'Accept': 'application/json'
+                },
+                validateStatus: () => true
+            });
+
+            return response.data.data.me.profile;
+        } catch (error) {
+            if (error.response?.data) return error.response.data;
+            throw error;
+        }
     }
 }
 

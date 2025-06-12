@@ -1,4 +1,4 @@
-import Spotify from './spotify.js';
+import Spotify from '../spotify.js';
 
 const spotify = new Spotify();
 
