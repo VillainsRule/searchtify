@@ -1,7 +1,7 @@
 {
     "name": "searchtify",
     "description": "a search package for spotify that requires no credentials!",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "keywords": ["spotify", "search", "thirdparty", "api", "searchtify"],
     "author": {
         "name": "VillainsRule",

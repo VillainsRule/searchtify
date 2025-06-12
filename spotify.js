@@ -155,12 +155,8 @@ class Spotify {
             }
         };
 
-        const headers = {
-            ...(await this.getHeaders())
-        }
-
         let response = await axios.post(url.toString(), payload, {
-            headers,
+            headers: await this.getHeaders(),
             validateStatus: () => true
         });
 
