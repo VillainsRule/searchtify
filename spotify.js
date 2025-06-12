@@ -156,8 +156,7 @@ class Spotify {
         };
 
         const headers = {
-            ...(await this.getHeaders()),
-            'Content-Length': JSON.stringify(payload).length.toString()
+            ...(await this.getHeaders())
         }
 
         let response = await axios.post(url.toString(), payload, {
