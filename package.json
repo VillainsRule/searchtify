@@ -1,8 +1,14 @@
 {
     "name": "searchtify",
     "description": "a search package for spotify that requires no credentials!",
-    "version": "1.2.1",
-    "keywords": ["spotify", "search", "thirdparty", "api", "searchtify"],
+    "version": "1.2.2",
+    "keywords": [
+        "spotify",
+        "search",
+        "thirdparty",
+        "api",
+        "searchtify"
+    ],
     "author": {
         "name": "VillainsRule",
         "url": "https://github.com/VillainsRule"
@@ -26,7 +32,6 @@
         ".": "./spotify.js"
     },
     "dependencies": {
-        "axios": "^1.9.0",
-        "otpauth": "^9.4.0"
+        "axios": "^1.9.0"
     }
 }

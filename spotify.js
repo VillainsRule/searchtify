@@ -1,5 +1,6 @@
+import crypto from 'node:crypto';
+
 import axios from 'axios';
-import * as OTPAuth from 'otpauth';
 
 class Spotify {
     setUserAgent(userAgent) {
@@ -27,30 +28,44 @@ class Spotify {
         const scriptContent = await axios.get(mainScript);
 
         this.variables = {
-            buildVer: scriptContent.data.match(/buildVer:"(.*?)"/)[1],
-            buildDate: scriptContent.data.match(/buildDate:"(.*?)"/)[1],
-            clientVersion: scriptContent.data.match(/clientVersion:"(.*?)"/)[1],
-            serverTime: mainPage.headers['x-timer'].match(/S([0-9]+)\./)[1]
+            // spotify seems to have broken their own client...
+            buildVer: 'unknown', // scriptContent.data.match(/buildVer:"(.*?)"/)?.[1],
+            buildDate: 'unknown', // scriptContent.data.match(/buildDate:"(.*?)"/)?.[1],
+            clientVersion: scriptContent.data.match(/clientVersion:"(.*?)"/)?.[1],
+            serverTime: mainPage.headers['x-timer'].match(/S([0-9]+)\./)?.[1]
         };
 
         return this.variables;
     }
 
-    generateTOTP() {
-        const De = function (e) {
-            const t = e.map((e, t) => e ^ t % 33 + 9);
-            const n = Buffer.from(t.join(''), 'utf8').toString('hex');
-            return OTPAuth.Secret.fromHex(n);
-        }([12, 56, 76, 33, 88, 44, 88, 33, 78, 78, 11, 66, 22, 22, 55, 69, 54]);
+    generateTOTP(timestamp = Date.now()) {
+        const fixSecret = (e) => {
+            const t = e.map((e, t) => e ^ (t % 33 + 9));
+            const joined = t.join('');
+            const utf8Bytes = Buffer.from(joined, 'utf8');
+            return utf8Bytes;
+        }
 
-        const je = new OTPAuth.TOTP({
-            period: 30,
-            digits: 6,
-            algorithm: 'SHA1',
-            secret: De
-        });
+        const secretBuffer = fixSecret([12, 56, 76, 33, 88, 44, 88, 33, 78, 78, 11, 66, 22, 22, 55, 69, 54]);
 
-        return je.generate({ timestamp: Date.now() });
+        const digits = 6;
+        const timeStep = 30;
+        const time = Math.floor(timestamp / 1000 / timeStep);
+
+        const counter = Buffer.alloc(8);
+        counter.writeBigUInt64BE(BigInt(time));
+
+        const hmac = crypto.createHmac('sha1', secretBuffer).update(counter).digest();
+        const offset = hmac[hmac.length - 1] & 0xf;
+
+        const code = (
+            ((hmac[offset] & 0x7f) << 24) |
+            ((hmac[offset + 1] & 0xff) << 16) |
+            ((hmac[offset + 2] & 0xff) << 8) |
+            (hmac[offset + 3] & 0xff)
+        ) % 10 ** digits;
+
+        return code.toString().padStart(digits, '0');
     }
 
     async getAccessToken() {
@@ -69,6 +84,7 @@ class Spotify {
         params.append('cTime', Date.now().toString());
         params.append('buildVer', this.variables.buildVer);
         params.append('buildDate', this.variables.buildDate);
+        params.append('totpValidUntil', '');
 
         urlBase.search = params.toString();
 
