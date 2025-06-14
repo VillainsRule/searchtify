@@ -7,9 +7,9 @@
 
 <h2 align='center'>disclaimer</h2>
 
-the point of this package is NOT to provide some sort of "clean" API for spotify searching.
+the point of this package is NOT to provide some sort of "clean" API for spotify searching. maybe in the future.
 
-the point of this package is to provide a wrapper for spotify's complex API protection.
+the point of this package is to provide a wrapper for spotify's complex API. they are constantly changing parameters and endpoints. it's actually kind of annoying.
 
 <br><br>
 
