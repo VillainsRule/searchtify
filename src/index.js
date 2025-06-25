@@ -1,6 +1,5 @@
 import crypto from 'node:crypto';
-
-import axios from 'axios';
+import { axiosLike } from './axiosLike.js';
 
 class Spotify {
     setUserAgent(userAgent) {
@@ -14,7 +13,7 @@ class Spotify {
     }
 
     async getVariables() {
-        const mainPage = await axios.get('https://open.spotify.com', {
+        const mainPage = await axiosLike.get('https://open.spotify.com', {
             headers: {
                 accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
                 cookie: this.cookie,
@@ -22,17 +21,17 @@ class Spotify {
             }
         });
 
-        this.deviceId = mainPage.headers['set-cookie'].find(h => h.startsWith('sp_t=')).split(';')[0].split('=')[1];
+        this.deviceId = mainPage.headers.getSetCookie().find(h => h.startsWith('sp_t=')).split(';')[0].split('=')[1];
 
         const mainScript = mainPage.data.match(/<\/script><script src="(.*?)"/)[1];
-        const scriptContent = await axios.get(mainScript);
+        const scriptContent = await axiosLike.get(mainScript);
 
         this.variables = {
             // spotify seems to have broken their own client...
             buildVer: 'unknown', // scriptContent.data.match(/buildVer:"(.*?)"/)?.[1],
             buildDate: 'unknown', // scriptContent.data.match(/buildDate:"(.*?)"/)?.[1],
             clientVersion: scriptContent.data.match(/clientVersion:"(.*?)"/)?.[1],
-            serverTime: mainPage.headers['x-timer'].match(/S([0-9]+)\./)?.[1]
+            serverTime: mainPage.headers.get('x-timer').match(/S([0-9]+)\./)?.[1]
         };
 
         return this.variables;
@@ -88,7 +87,7 @@ class Spotify {
 
         urlBase.search = params.toString();
 
-        const response = await axios.get(urlBase, {
+        const response = await axiosLike.get(urlBase, {
             headers: {
                 'Accept': '*/*',
                 'Accept-Language': 'en-US,en;q=0.9',
@@ -112,7 +111,7 @@ class Spotify {
             this.deviceId.slice(20)
         ].join('-');
 
-        const response = await axios.post('https://clienttoken.spotify.com/v1/clienttoken', {
+        const response = await axiosLike.post('https://clienttoken.spotify.com/v1/clienttoken', {
             client_data: {
                 client_version: this.variables.clientVersion,
                 client_id: this.accessToken.clientId,
@@ -189,16 +188,12 @@ class Spotify {
             }
         };
 
-        let response = await axios.post(url.toString(), payload, {
-            headers: await this.getHeaders(),
-            validateStatus: () => true
-        });
-
+        let response = await axiosLike.post(url.toString(), payload, { headers: await this.getHeaders() });
         return response.data.data.searchV2;
     }
 
     async getPopular(timezone = Intl.DateTimeFormat().resolvedOptions().timeZone) {
-        let response = await axios.post('https://api-partner.spotify.com/pathfinder/v2/query', {
+        let response = await axiosLike.post('https://api-partner.spotify.com/pathfinder/v2/query', {
             operationName: 'home',
             variables: {
                 timeZone: timezone,
@@ -212,16 +207,13 @@ class Spotify {
                     sha256Hash: '72325e84c876c72564fb9ab012f602be8ef6a1fdd3039be2f8b4f2be4c229a30'
                 }
             }
-        }, {
-            headers: await this.getHeaders(),
-            validateStatus: () => true
-        });
+        }, { headers: await this.getHeaders() });
 
         return response.data.data.home.sectionContainer.sections.items;
     }
 
     async getAlbum(uri) {
-        let response = await axios.post('https://api-partner.spotify.com/pathfinder/v2/query', {
+        let response = await axiosLike.post('https://api-partner.spotify.com/pathfinder/v2/query', {
             operationName: 'getAlbum',
             variables: {
                 uri: uri,
@@ -235,16 +227,13 @@ class Spotify {
                     sha256Hash: '97dd13a1f28c80d66115a13697a7ffd94fe3bebdb94da42159456e1d82bfee76'
                 }
             }
-        }, {
-            headers: await this.getHeaders(),
-            validateStatus: () => true
-        });
+        }, { headers: await this.getHeaders() });
 
         return response.data.data.albumUnion;
     }
 
     async getArtist(uri) {
-        let response = await axios.post('https://api-partner.spotify.com/pathfinder/v2/query', {
+        let response = await axiosLike.post('https://api-partner.spotify.com/pathfinder/v2/query', {
             operationName: 'queryArtistOverview',
             variables: {
                 uri: uri,
@@ -256,10 +245,7 @@ class Spotify {
                     sha256Hash: '1ac33ddab5d39a3a9c27802774e6d78b9405cc188c6f75aed007df2a32737c72'
                 }
             }
-        }, {
-            headers: await this.getHeaders(),
-            validateStatus: () => true
-        });
+        }, { headers: await this.getHeaders() });
 
         return response.data.data.artistUnion;
     }
@@ -270,7 +256,7 @@ class Spotify {
 
     async whoAmI() {
         try {
-            const response = await axios.post('https://api-partner.spotify.com/pathfinder/v2/query', {
+            const response = await axiosLike.post('https://api-partner.spotify.com/pathfinder/v2/query', {
                 operationName: 'profileAttributes',
                 variables: {},
                 extensions: {
@@ -284,7 +270,6 @@ class Spotify {
                     ...(await this.getHeaders()),
                     'Accept': 'application/json'
                 },
-                validateStatus: () => true
             });
 
             return response.data.data.me.profile;

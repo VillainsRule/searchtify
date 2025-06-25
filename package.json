@@ -1,7 +1,28 @@
 {
     "name": "searchtify",
+    "version": "1.2.3",
+    "author": {
+        "name": "VillainsRule",
+        "url": "https://github.com/VillainsRule"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/VillainsRule/searchtify.git"
+    },
+    "exports": {
+        "./package.json": "./package.json",
+        ".": "./src/index.js"
+    },
+    "bugs": {
+        "url": "https://github.com/VillainsRule/searchtify/issues"
+    },
     "description": "a search package for spotify that requires no credentials!",
-    "version": "1.2.2",
+    "files": [
+        "package.json",
+        "src/**/*.js",
+        "README.md"
+    ],
+    "homepage": "https://github.com/VillainsRule/searchtify",
     "keywords": [
         "spotify",
         "search",
@@ -9,32 +30,8 @@
         "api",
         "searchtify"
     ],
-    "author": {
-        "name": "VillainsRule",
-        "url": "https://github.com/VillainsRule"
-    },
-    "homepage": "https://github.com/VillainsRule/searchtify",
-    "bugs": {
-        "url": "https://github.com/VillainsRule/searchtify/issues"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/VillainsRule/searchtify.git"
-    },
-    "type": "module",
-    "files": [
-        "package.json",
-        "spotify.js",
-        "README.md"
-    ],
-    "exports": {
-        "./package.json": "./package.json",
-        ".": "./spotify.js"
-    },
-    "dependencies": {
-        "axios": "^1.9.0"
-    },
     "scripts": {
         "doesitwork": "bun tests/does-it-work.js"
-    }
+    },
+    "type": "module"
 }
