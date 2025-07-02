@@ -38,14 +38,12 @@ class Spotify {
     }
 
     generateTOTP(timestamp = Date.now()) {
-        const fixSecret = (e) => {
-            const t = e.map((e, t) => e ^ (t % 33 + 9));
-            const joined = t.join('');
-            const utf8Bytes = Buffer.from(joined, 'utf8');
-            return utf8Bytes;
-        }
-
-        const secretBuffer = fixSecret([12, 56, 76, 33, 88, 44, 88, 33, 78, 78, 11, 66, 22, 22, 55, 69, 54]);
+        const secretBuffer = Buffer.from(new Uint8Array([
+            49, 48, 48, 49, 49, 49, 56, 49, 49, 49, 49, 55, 57, 56, 50, 49, 50,
+            51, 49, 50, 52, 54, 56, 56, 52, 54, 57, 51, 55, 56, 49, 51, 50, 54,
+            52, 52, 50, 56, 49, 57, 57, 52, 55, 57, 50, 51, 54, 53, 51, 53, 57,
+            49, 49, 51, 54, 52, 49, 48, 54, 50, 50, 49, 51, 49, 48, 55, 51, 48
+        ]));
 
         const digits = 6;
         const timeStep = 30;
@@ -78,12 +76,12 @@ class Spotify {
         params.append('productType', 'web-player');
         params.append('totp', totp);
         params.append('totpServer', totp);
-        params.append('totpVer', '5');
-        params.append('sTime', this.variables.serverTime);
-        params.append('cTime', Date.now().toString());
-        params.append('buildVer', this.variables.buildVer);
-        params.append('buildDate', this.variables.buildDate);
-        params.append('totpValidUntil', '');
+        params.append('totpVer', '9');
+        // params.append('sTime', this.variables.serverTime);
+        // params.append('cTime', Date.now().toString());
+        // params.append('buildVer', this.variables.buildVer);
+        // params.append('buildDate', this.variables.buildDate);
+        // params.append('totpValidUntil', '');
 
         urlBase.search = params.toString();
 
@@ -102,14 +100,6 @@ class Spotify {
 
     async getClientToken() {
         if (!this.variables) await this.getVariables();
-
-        this.deviceId = [
-            this.deviceId.slice(0, 8),
-            this.deviceId.slice(8, 12),
-            this.deviceId.slice(12, 16),
-            this.deviceId.slice(16, 20),
-            this.deviceId.slice(20)
-        ].join('-');
 
         const response = await axiosLike.post('https://clienttoken.spotify.com/v1/clienttoken', {
             client_data: {
