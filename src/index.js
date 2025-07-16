@@ -39,13 +39,12 @@ class Spotify {
 
     generateTOTP(timestamp = Date.now()) {
         const secretBuffer = Buffer.from(new Uint8Array([
-            57, 56, 57, 49, 53, 56, 53,
-            51, 55, 56, 56, 51, 56, 56,
-            54, 53, 56, 52, 56, 49, 53,
-            57, 55, 51, 51, 55, 51, 54,
-            53, 55, 54, 55, 55, 49, 49,
-            48, 55, 53, 48, 49, 49, 50,
-            56, 48, 49, 49, 55, 54, 49
+            54, 48, 53, 49, 54, 56, 55, 54, 53, 57, 57,
+            48, 49, 49, 48, 52, 48, 51, 54, 49, 50, 48,
+            51, 51, 51, 55, 49, 49, 57, 52, 54, 54, 56,
+            57, 48, 54, 48, 49, 50, 54, 57, 53, 55, 57,
+            57, 50, 51, 53, 53, 54, 50, 57, 49, 56, 55,
+            51, 49, 49, 53, 56, 51, 49, 50, 49, 56, 48
         ]));
 
         const digits = 6;
@@ -79,7 +78,7 @@ class Spotify {
         params.append('productType', 'web-player');
         params.append('totp', totp);
         params.append('totpServer', totp);
-        params.append('totpVer', '12');
+        params.append('totpVer', '15');
         // params.append('sTime', this.variables.serverTime);
         // params.append('cTime', Date.now().toString());
         // params.append('buildVer', this.variables.buildVer);
