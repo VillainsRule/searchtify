@@ -39,12 +39,12 @@ class Spotify {
 
     generateTOTP(timestamp = Date.now()) {
         const secretBuffer = Buffer.from(new Uint8Array([
-            54, 48, 53, 49, 54, 56, 55, 54, 53, 57, 57,
-            48, 49, 49, 48, 52, 48, 51, 54, 49, 50, 48,
-            51, 51, 51, 55, 49, 49, 57, 52, 54, 54, 56,
-            57, 48, 54, 48, 49, 50, 54, 57, 53, 55, 57,
-            57, 50, 51, 53, 53, 54, 50, 57, 49, 56, 55,
-            51, 49, 49, 53, 56, 51, 49, 50, 49, 56, 48
+            52, 57, 54, 49, 52, 53, 49, 50, 55, 54, 53, 55, 51,
+            52, 50, 53, 52, 49, 48, 56, 56, 48, 55, 55, 55, 48,
+            49, 49, 54, 56, 56, 52, 50, 56, 51, 52, 48, 51, 50,
+            52, 52, 57, 55, 54, 50, 49, 48, 53, 56, 55, 48, 51,
+            57, 57, 49, 50, 54, 50, 49, 49, 50, 55, 49, 48, 49,
+            54, 52
         ]));
 
         const digits = 6;
@@ -78,7 +78,7 @@ class Spotify {
         params.append('productType', 'web-player');
         params.append('totp', totp);
         params.append('totpServer', totp);
-        params.append('totpVer', '15');
+        params.append('totpVer', '20');
         // params.append('sTime', this.variables.serverTime);
         // params.append('cTime', Date.now().toString());
         // params.append('buildVer', this.variables.buildVer);
@@ -96,6 +96,13 @@ class Spotify {
                 'Cookie': this.cookie
             }
         });
+
+        if (response.data.error) {
+            console.error('spotify patched searchtify yet again. here\'s how to fix:');
+            console.error('1. ensure you have the latest version of searchtify installed');
+            console.error('2. open an issue @ https://github.com/VillainsRule/searchtify');
+            process.exit(1);
+        }
 
         this.accessToken = response.data;
     }
