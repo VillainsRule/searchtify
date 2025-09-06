@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { SECRET } from '../src/constants.js';
 
 function generateTOTP(secretBuffer, timestamp = Date.now()) {
     const digits = 6;
@@ -21,11 +22,6 @@ function generateTOTP(secretBuffer, timestamp = Date.now()) {
     return code.toString().padStart(digits, '0');
 }
 
-const secretBuffer = Buffer.from(new Uint8Array([
-    49, 48, 48, 49, 49, 49, 56, 49, 49, 49, 49, 55, 57, 56, 50, 49, 50,
-    51, 49, 50, 52, 54, 56, 56, 52, 54, 57, 51, 55, 56, 49, 51, 50, 54,
-    52, 52, 50, 56, 49, 57, 57, 52, 55, 57, 50, 51, 54, 53, 51, 53, 57,
-    49, 49, 51, 54, 52, 49, 48, 54, 50, 50, 49, 51, 49, 48, 55, 51, 48
-]));
+const secretBuffer = Buffer.from(new Uint8Array(SECRET));
 
 console.log(generateTOTP(secretBuffer));

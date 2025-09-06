@@ -1,6 +1,6 @@
 {
     "name": "searchtify",
-    "version": "1.2.8",
+    "version": "1.2.10",
     "author": {
         "name": "VillainsRule",
         "url": "https://github.com/VillainsRule"
@@ -33,5 +33,8 @@
     "scripts": {
         "doesitwork": "bun tests/does-it-work.js"
     },
-    "type": "module"
+    "type": "module",
+    "devDependencies": {
+        "puppeteer": "^24.19.0"
+    }
 }

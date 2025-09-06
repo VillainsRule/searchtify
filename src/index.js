@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import { axiosLike } from './axiosLike.js';
+import { SECRET, TOTP_VER } from './constants.js';
 
 class Spotify {
     setUserAgent(userAgent) {
@@ -38,14 +39,7 @@ class Spotify {
     }
 
     generateTOTP(timestamp = Date.now()) {
-        const secretBuffer = Buffer.from(new Uint8Array([
-            52, 57, 54, 49, 52, 53, 49, 50, 55, 54, 53, 55, 51,
-            52, 50, 53, 52, 49, 48, 56, 56, 48, 55, 55, 55, 48,
-            49, 49, 54, 56, 56, 52, 50, 56, 51, 52, 48, 51, 50,
-            52, 52, 57, 55, 54, 50, 49, 48, 53, 56, 55, 48, 51,
-            57, 57, 49, 50, 54, 50, 49, 49, 50, 55, 49, 48, 49,
-            54, 52
-        ]));
+        const secretBuffer = Buffer.from(new Uint8Array(SECRET));
 
         const digits = 6;
         const timeStep = 30;
@@ -78,7 +72,7 @@ class Spotify {
         params.append('productType', 'web-player');
         params.append('totp', totp);
         params.append('totpServer', totp);
-        params.append('totpVer', '20');
+        params.append('totpVer', TOTP_VER.toString());
         // params.append('sTime', this.variables.serverTime);
         // params.append('cTime', Date.now().toString());
         // params.append('buildVer', this.variables.buildVer);
@@ -118,7 +112,7 @@ class Spotify {
                     device_brand: 'Apple',
                     device_model: 'unknown',
                     os: 'macos',
-                    os_version: '10.15.7',
+                    os_version: '10.15.8',
                     device_id: this.deviceId,
                     device_type: 'computer'
                 }
@@ -131,16 +125,18 @@ class Spotify {
             }
         });
 
+        console.log(response.data, this.accessToken, this.variables);
+
         this.clientToken = response.data.granted_token;
         this.clientToken.refreshAt = Date.now() + 1209600;
     }
 
     async getHeaders() {
         if (!this.accessToken) await this.getAccessToken();
-        if (!this.clientToken) await this.getClientToken();
+        // if (!this.clientToken) await this.getClientToken();
 
         if (this.accessToken.accessTokenExpirationTimestampMs - Date.now() <= 1) await this.getAccessToken();
-        if (this.clientToken.refreshAt <= Date.now()) await this.getClientToken();
+        // if (this.clientToken.refreshAt <= Date.now()) await this.getClientToken();
 
         return {
             'Accept': 'application/json',
@@ -149,7 +145,7 @@ class Spotify {
             'App-Platform': 'WebPlayer',
             'Authorization': `Bearer ${this.accessToken.accessToken}`,
             'Cache-Control': 'no-cache',
-            'Client-Token': this.clientToken.token,
+            // 'Client-Token': this.clientToken.token,
             'Content-Type': 'application/json;charset=UTF-8',
             'Origin': 'https://open.spotify.com',
             'Referer': 'https://open.spotify.com/',
