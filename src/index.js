@@ -112,7 +112,7 @@ class Spotify {
                     device_brand: 'Apple',
                     device_model: 'unknown',
                     os: 'macos',
-                    os_version: '10.15.8',
+                    os_version: '10.15.7',
                     device_id: this.deviceId,
                     device_type: 'computer'
                 }
@@ -124,8 +124,6 @@ class Spotify {
                 'Content-Type': 'application/json'
             }
         });
-
-        console.log(response.data, this.accessToken, this.variables);
 
         this.clientToken = response.data.granted_token;
         this.clientToken.refreshAt = Date.now() + 1209600;
