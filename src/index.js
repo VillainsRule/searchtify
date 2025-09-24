@@ -1,8 +1,17 @@
 import crypto from 'node:crypto';
 import { axiosLike } from './axiosLike.js';
-import { SECRET, TOTP_VER } from './constants.js';
 
 class Spotify {
+    constructor() {
+        this.$fetchSecrets();
+        setInterval(() => this.$fetchSecrets(), 1000 * 60 * 60 * 1); // refresh every hour
+    }
+
+    async $fetchSecrets() {
+        const bytes = await axiosLike.get('https://raw.githubusercontent.com/Thereallo1026/spotify-secrets/main/secrets/secretBytes.json');
+        this.$latestSecret = bytes.data[bytes.data.length - 1];
+    }
+
     setUserAgent(userAgent) {
         this.customUserAgent = userAgent;
     }
@@ -38,8 +47,26 @@ class Spotify {
         return this.variables;
     }
 
+    toSecret(input) {
+        const inputBytes = [...Buffer.from(input)];
+        const transformed = inputBytes.map((e, t) => e ^ ((t % 33) + 9));
+        const joined = transformed.map(num => num.toString()).join('');
+        const hex_str = Buffer.from(joined).toString('hex');
+        return Buffer.from(hex_str, 'hex');
+    }
+
     generateTOTP(timestamp = Date.now()) {
-        const secretBuffer = Buffer.from(new Uint8Array(SECRET));
+        const totpSecret = this.$latestSecret ? this.toSecret(this.$latestSecret.secret) : null;
+        if (!totpSecret) {
+            console.error('spotify patched searchtify yet again. here\'s how to fix:');
+            console.error('1. ensure you have the latest version of searchtify installed');
+            console.error('2. open an issue @ https://github.com/VillainsRule/searchtify');
+            console.error('3. make sure to specify "error code 2" in the issue');
+            process.exit(1);
+        }
+
+        const secretBuffer = Buffer.from(totpSecret);
+        const secret = secretBuffer.toString('hex');
 
         const digits = 6;
         const timeStep = 30;
@@ -72,7 +99,7 @@ class Spotify {
         params.append('productType', 'web-player');
         params.append('totp', totp);
         params.append('totpServer', totp);
-        params.append('totpVer', TOTP_VER.toString());
+        params.append('totpVer', this.$latestSecret.version);
         // params.append('sTime', this.variables.serverTime);
         // params.append('cTime', Date.now().toString());
         // params.append('buildVer', this.variables.buildVer);
@@ -92,9 +119,11 @@ class Spotify {
         });
 
         if (response.data.error) {
+            // console.log(response.data, this.$latestSecret);
             console.error('spotify patched searchtify yet again. here\'s how to fix:');
             console.error('1. ensure you have the latest version of searchtify installed');
             console.error('2. open an issue @ https://github.com/VillainsRule/searchtify');
+            console.error('3. make sure to specify "error code 1" in the issue');
             process.exit(1);
         }
 

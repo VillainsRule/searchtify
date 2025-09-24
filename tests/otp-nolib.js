@@ -1,5 +1,6 @@
 import crypto from 'crypto';
-import { SECRET } from '../src/constants.js';
+
+const SECRET = []; // add secret bytes to test
 
 function generateTOTP(secretBuffer, timestamp = Date.now()) {
     const digits = 6;

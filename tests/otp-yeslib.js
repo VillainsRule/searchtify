@@ -1,5 +1,6 @@
 import * as OTPAuth from 'otpauth';
-import { SECRET } from '../src/constants.js';
+
+const SECRET = []; // add secret bytes to test
 
 const je = new OTPAuth.TOTP({
     period: 30,
