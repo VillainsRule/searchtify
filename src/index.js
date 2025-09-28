@@ -4,7 +4,7 @@ import { axiosLike } from './axiosLike.js';
 class Spotify {
     constructor() {
         this.$fetchSecrets();
-        setInterval(() => this.$fetchSecrets(), 1000 * 60 * 60 * 1); // refresh every hour
+        setInterval(() => this.$fetchSecrets(), 1000 * 60 * 60 * 1).unref();
     }
 
     async $fetchSecrets() {

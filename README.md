@@ -130,8 +130,5 @@ you can also set a custom user agent using `setUserAgent`:
 spotify.setUserAgent('putting something like this in the useragent will probably flag your IP');
 ```
 
-> [!NOTE]
-> as of 1.2.0, the accessToken and clientToken will automatically refresh, meaning searchtify can be used in 24/7 programs rather than snippets.
-
 <br><br>
 <h5 align='center'>made with ❤️</h5>
