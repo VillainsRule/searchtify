@@ -8,8 +8,16 @@ class Spotify {
     }
 
     async $fetchSecrets() {
-        const bytes = await axiosLike.get('https://raw.githubusercontent.com/Thereallo1026/spotify-secrets/main/secrets/secretBytes.json');
+        const bytes = await axiosLike.get('https://raw.githubusercontent.com/xyloflake/spot-secrets-go/main/secrets/secretBytes.json');
         this.$latestSecret = bytes.data[bytes.data.length - 1];
+
+        if (!this.$latestSecret) {
+            console.error('spotify patched searchtify yet again. here\'s how to fix:');
+            console.error('1. ensure you have the latest version of searchtify installed');
+            console.error('2. open an issue @ https://github.com/VillainsRule/searchtify');
+            console.error('3. make sure to specify "error code 3" in the issue');
+            process.exit(1);
+        }
     }
 
     setUserAgent(userAgent) {
