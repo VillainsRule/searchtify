@@ -3,17 +3,13 @@
     <h3>a search package for spotify that requires no credentials!</h3>
 </div>
 
-<br><br>
-
-<h2 align='center'>disclaimer</h2>
+<br><br><h2 align='center'>disclaimer</h2>
 
 the point of this package is NOT to provide some sort of "clean" API for spotify searching. maybe in the future.
 
 the point of this package is to provide a wrapper for spotify's complex API. they are constantly changing parameters and endpoints. it's actually kind of annoying.
 
-<br><br>
-
-<h2 align='center'>usage</h2>
+<br><br><h2 align='center'>usage</h2>
 
 usage is relatively simple:
 
@@ -129,6 +125,12 @@ you can also set a custom user agent using `setUserAgent`:
 ```js
 spotify.setUserAgent('putting something like this in the useragent will probably flag your IP');
 ```
+
+<br><br><h2 align='center'>credits</h2>
+
+the secrets directory of this repository is code created by <a href='https://github.com/Thereallo1026'>Thereallo1026</a> (repository deleted)<br>
+the original proof of concept was created by <a href='https://github.com/misiektoja/spotify_monitor/blob/dev/debug/spotify_monitor_secret_grabber.py'>Michal Szymanski</a><br>
+thanks to both of you; y'all rock!
 
 <br><br>
 <h5 align='center'>made with ❤️</h5>

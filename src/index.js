@@ -8,7 +8,7 @@ class Spotify {
     }
 
     async $fetchSecrets() {
-        const bytes = await axiosLike.get('https://raw.githubusercontent.com/xyloflake/spot-secrets-go/main/secrets/secretBytes.json');
+        const bytes = await axiosLike.get('https://raw.githubusercontent.com/VillainsRule/searchtify/master/secrets/secretBytes.json');
         this.$latestSecret = bytes.data[bytes.data.length - 1];
 
         if (!this.$latestSecret) {
