@@ -74,7 +74,6 @@ class Spotify {
         }
 
         const secretBuffer = Buffer.from(totpSecret);
-        const secret = secretBuffer.toString('hex');
 
         const digits = 6;
         const timeStep = 30;
@@ -108,11 +107,6 @@ class Spotify {
         params.append('totp', totp);
         params.append('totpServer', totp);
         params.append('totpVer', this.$latestSecret.version);
-        // params.append('sTime', this.variables.serverTime);
-        // params.append('cTime', Date.now().toString());
-        // params.append('buildVer', this.variables.buildVer);
-        // params.append('buildDate', this.variables.buildDate);
-        // params.append('totpValidUntil', '');
 
         urlBase.search = params.toString();
 
@@ -127,7 +121,6 @@ class Spotify {
         });
 
         if (response.data.error) {
-            // console.log(response.data, this.$latestSecret);
             console.error('spotify patched searchtify yet again. here\'s how to fix:');
             console.error('1. ensure you have the latest version of searchtify installed');
             console.error('2. open an issue @ https://github.com/VillainsRule/searchtify');

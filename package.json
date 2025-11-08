@@ -34,5 +34,8 @@
         "doesitwork": "bun tests/does-it-work.js",
         "secrets": "bun secrets/scrape.ts"
     },
-    "type": "module"
+    "type": "module",
+    "devDependencies": {
+        "@types/bun": "^1.3.2"
+    }
 }

@@ -1,3 +1,4 @@
+import Bun from 'bun';
 import path from 'path';
 
 import puppeteer from 'puppeteer-extra';
@@ -35,10 +36,10 @@ function summarise(caps: Capture[]): void {
     const sortedEntries = Object.entries(real).sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
     const formattedData = sortedEntries.map(([version, secret]) => ({ version: parseInt(version), secret }));
 
-    const secretBytes: Record<string, number[]> = {};
-    sortedEntries.forEach(([v, s]) => {
-        secretBytes[v] = Array.from(s).map((c) => c.charCodeAt(0));
-    });
+    const secretBytes = sortedEntries.map(([version, secret]) => ({
+        version: parseInt(version),
+        secret: Array.from(secret).map((c) => c.charCodeAt(0))
+    }));
 
     Bun.write(path.join(import.meta.dirname, 'secrets.json'), JSON.stringify(formattedData, null, 2));
     Bun.write(path.join(import.meta.dirname, 'secretBytes.json'), JSON.stringify(secretBytes));
