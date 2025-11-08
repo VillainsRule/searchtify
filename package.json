@@ -32,7 +32,7 @@
     ],
     "scripts": {
         "doesitwork": "bun tests/does-it-work.js",
-        "secrets": "bun secrets/scrape.js"
+        "secrets": "bun secrets/scrape.ts"
     },
     "type": "module"
 }
