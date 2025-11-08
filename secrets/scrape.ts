@@ -79,7 +79,7 @@ Object.defineProperty(this,'secret',{value:v,writable:true,configurable:true,enu
             timeout: TIMEOUT,
         });
 
-        await page.waitForTimeout(3000);
+        await new Promise((resolve) => setTimeout(resolve, 3000));
 
         const caps = (await page.evaluate(() => {
             return (globalThis as any).__captures || [];
