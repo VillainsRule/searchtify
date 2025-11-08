@@ -31,7 +31,8 @@
         "searchtify"
     ],
     "scripts": {
-        "doesitwork": "bun tests/does-it-work.js"
+        "doesitwork": "bun tests/does-it-work.js",
+        "scrape": "bun secrets/scrape.js"
     },
     "type": "module"
 }
